@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../static/layui-v2.7.6/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/admin.css" />
+    <script src="../static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+<!--    <script src="assets/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>-->
+    <script src="../static/layui-v2.7.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../static/js/aJaxUtil.js"></script>
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+<div class="page-content-wrap" id="studentSearch">
+    <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">学生名单</h5>
+    <div class="layui-form-item">
+<table class="layui-hide" id="test" lay-filter="test"></table>
+    </div>
+    <!--注：本界面所有成绩为计算后的成绩,习题按照16次计算|测验按3次计算|考试成绩按一次计算,未录入成绩的按照0分计算,总成绩计算方式（平时占比40%,期末考试占比60%）-->
+    <hr></hr>
+    <h5 style="text-align: center;">课表查询</h5>
+</div>
+
+<!-- 注意：项目正式环境请勿引用该地址 -->
+<script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:'http://localhost:8080/scproject/student.do?operate=getDataOfStudents'
+            ,toolbar: true
+            ,title: '学生数据表'
+            ,totalRow: true
+            ,cols: [[
+                {field:'sid', title: '学号', sort: true}
+                ,{field:'name', title: '姓名'}
+                ,{field:'sex', title: '性别'}
+                ,{field:'major', title: '专业'}
+                ,{field:'grade', title: '年级', sort: true}
+                ,{field:'sclass', title: '班级', sort: true}
+            ]]
+            ,page: true
+
+        });
+    });
+</script>
+
+</body>
+</html>

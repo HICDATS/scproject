@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>课表</title>
+	<link rel="stylesheet" type="text/css"
+	href="../static/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../static/css/admin.css" />
+	<script src="../static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../static/js/aJaxUtil.js"></script>
+	<script src="../static/js/jquery-3.3.1.min.js"></script>
+	<script src="../static/js/axios.min.js" type="text/javascript" ></script>
+</head>
+
+<body>
+	<div class="page-content-wrap" id="studentSearch">
+	<h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">课程表</h5>
+		<hr>
+		<div class="layui-form-item">
+			<div class="layui-inline tool-btn">
+
+			</div>
+			<table class="layui-table"
+				   lay-data="{ url:'http://localhost:8080/scproject/course.do?operate=getTimeTableForTeacher', id:'scoreSum'}"
+				   lay-filter="demo">
+				<thead>
+					<tr>
+						<th lay-data="{field:'period',width:80}"></th>
+						<th lay-data="{field:'timeMonday',event: 'setSign1', style:'cursor: pointer;'}">星期一</th>
+						<th lay-data="{field:'timeTuesday',event: 'setSign2', style:'cursor: pointer;'}">星期二</th>
+						<th lay-data="{field:'timeWednesday',event: 'setSign3', style:'cursor: pointer;'}">星期三</th>
+						<th lay-data="{field:'timeThursday',event: 'setSign4', style:'cursor: pointer;'}">星期四</th>
+						<th lay-data="{field:'timeFriday',event: 'setSign5', style:'cursor: pointer;'}">星期五</th>
+						<th lay-data="{field:'timeSaturday',event: 'setSign6', style:'cursor: pointer;'}">星期六</th>
+						<th lay-data="{field:'timeSunday',event: 'setSign7', style:'cursor: pointer;'}">星期日</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+				<!--注：本界面所有成绩为计算后的成绩,习题按照16次计算|测验按3次计算|考试成绩按一次计算,未录入成绩的按照0分计算,总成绩计算方式（平时占比40%,期末考试占比60%）-->
+		<hr></hr>
+		<h5 style="text-align: center;">课表查询</h5>
+	</div>
+	<script src="../static/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>	<script>
+		layui.use('table', function(){
+			var table = layui.table;
+			//单元格事件
+			table.on('tool(demo)', function(obj){
+				var data = obj.data;
+				//星期一------------------------------------------------------------------------------
+				if(obj.event === 'setSign1'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeMonday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期二------------------------------------------------------------------------------
+				else if(obj.event === 'setSign2'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeTuesday
+						}
+					})
+						.then(function (value) {})
+						.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期三------------------------------------------------------------------------------
+				else if(obj.event === 'setSign3'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeWednesday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期四------------------------------------------------------------------------------
+				else if(obj.event === 'setSign4'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeThursday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期五------------------------------------------------------------------------------
+				else if(obj.event === 'setSign5'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeFriday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期六------------------------------------------------------------------------------
+				else if(obj.event === 'setSign6'){
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeSaturday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+				//星期日------------------------------------------------------------------------------
+				else {
+					axios({
+						method:"POST",
+						url:"student.do",
+						params:{
+							operate:'getStudentsBycname',
+							cname:data.timeSunday
+						}
+					})
+							.then(function (value) {})
+							.catch(function (reason) {});
+					layer.open({
+						type:2,
+						title:"学生信息",
+						shade: 0.8,
+						area: ['1000px', '90%'],
+						content: 'student-info.html'
+					});
+				}
+			});
+		});
+	</script>
+
+</body>
+
+</html>

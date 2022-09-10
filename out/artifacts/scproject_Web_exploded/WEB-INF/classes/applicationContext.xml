@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE beans [
+    <!ELEMENT beans (bean*)>
+    <!ELEMENT bean (property*)>
+    <!ELEMENT property (#PCDATA)>
+
+    <!ATTLIST bean id ID #REQUIRED>
+    <!ATTLIST bean class CDATA #IMPLIED>
+    <!ATTLIST property name CDATA #IMPLIED>
+    <!ATTLIST property ref IDREF #IMPLIED>
+]>
+
+<beans>
+    <bean id="page" class="com.sc.myssm.myspringmvc.PageController"/>
+
+    <!-- DAO -->
+    <bean id="userDao" class="com.sc.scourse.dao.impl.UserDaoImpl"/>
+    <bean id="teacherDao" class="com.sc.scourse.dao.impl.TeacherDaoImpl">
+
+    </bean>
+    <bean id="studentDao" class="com.sc.scourse.dao.impl.StudentDaoImpl">
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+    </bean>
+    <bean id="s_C_ScoreDao" class="com.sc.scourse.dao.impl.S_C_ScoreDaoImpl">
+        <property name="courseDao" ref="courseDao"/>
+
+    </bean>
+    <bean id="courseDao" class="com.sc.scourse.dao.impl.CourseDaoImpl">
+        <property name="teacherDao" ref="teacherDao"/>
+        <property name="s_C_ScoreDao" ref="s_C_ScoreDao"/>
+    </bean>
+
+    <!-- service -->
+    <bean id="userService" class="com.sc.scourse.service.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+    <bean id="studentService" class="com.sc.scourse.service.impl.StudentServiceImpl">
+        <property name="studentDao" ref="studentDao"/>
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+        <property name="courseService" ref="courseService"/>
+        <property name="userService" ref="userService"/>
+    </bean>
+    <bean id="teacherService" class="com.sc.scourse.service.impl.TeacherServiceImpl">
+        <property name="teacherDao" ref="teacherDao"/>
+        <property name="courseService" ref="courseService"/>
+        <property name="userService" ref="userService"/>
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+    </bean>
+    <bean id="courseService" class="com.sc.scourse.service.impl.CourseServiceImpl">
+        <property name="courseDao" ref="courseDao"/>
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+    </bean>
+    <bean id="s_C_ScoreService" class="com.sc.scourse.service.impl.S_C_ScoreServiceImpl">
+        <property name="s_C_ScoreDao" ref="s_C_ScoreDao"/>
+    </bean>
+
+    <!-- controller -->
+    <bean id="user" class="com.sc.scourse.controller.UserController">
+        <property name="userService" ref="userService"/>
+        <property name="studentService" ref="studentService"/>
+        <property name="teacherService" ref="teacherService"/>
+
+    </bean>
+    <bean id="course" class="com.sc.scourse.controller.CourseController">
+        <property name="courseService" ref="courseService"/>
+        <property name="studentService" ref="studentService"/>
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+        <property name="teacherService" ref="teacherService"/>
+    </bean>
+
+    <bean id="score" class="com.sc.scourse.controller.ScoreController">
+        <property name="studentService" ref="studentService"/>
+        <property name="s_C_ScoreService" ref="s_C_ScoreService"/>
+        <property name="courseService" ref="courseService"/>
+    </bean>
+
+    <bean id="student" class="com.sc.scourse.controller.StudentController">
+        <property name="studentService" ref="studentService"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="teacher" class="com.sc.scourse.controller.TeacherController">
+        <property name="teacherService" ref="teacherService"/>
+    </bean>
+
+</beans>

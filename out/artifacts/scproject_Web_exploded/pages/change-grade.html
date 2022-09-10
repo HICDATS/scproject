@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link rel="stylesheet" type="text/css" href="../static/layui-v2.7.6/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../static/css/admin.css" />
+	<script src="../static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../static/layui-v2.7.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../static/js/aJaxUtil.js"></script>
+	<script src="../static/js/jquery-3.3.1.min.js"></script>
+	<script src="../static/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../static/js/axios.min.js" type="text/javascript" ></script>
+</head>
+<body>
+<div class="page-content-wrap" id="studentSearch">
+	<h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">学生查询界面</h5>
+	<div class="layui-form-item">
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+	<!--注：本界面所有成绩为计算后的成绩,习题按照16次计算|测验按3次计算|考试成绩按一次计算,未录入成绩的按照0分计算,总成绩计算方式（平时占比40%,期末考试占比60%）-->
+	<hr></hr>
+	<h5 style="text-align: center;">登记成绩</h5>
+</div>
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-inline" style="width: 235px;">
+		<input name="" placeholder="请输入你要查询的信息" class="layui-input" id="demo2">
+	</div>
+	<div class="layui-inline layui-word-aux layui-font-gray">
+		<a href="javascript:;" class="layui-font-blue" id="demo3">查询 <i class="layui-icon layui-font-12 layui-icon-down"></i></a>
+	</div>
+</script>
+
+<!-- 注意：项目正式环境请勿引用该地址 -->
+<script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+
+
+<script>
+	layui.use(['form', 'util', 'layer','dropdown','table'], function(){
+		var form = layui.form;
+		var x = "";
+		var dropdown = layui.dropdown
+				,util = layui.util
+				,layer = layui.layer
+				,table = layui.table
+				,$ = layui.jquery;
+		table.render({
+			elem: '#test'
+			, height: 550
+			,url:'http://localhost:8080/scproject/score.do?operate=getScoreFroTeacher'
+			,toolbar: '#toolbarDemo'
+			,title: '学生数据表'
+			,totalRow: true
+			,cols: [[
+				{field:'sid', title: '学号', sort: true, fixed: 'left'}
+				,{field:'sname',  title: '姓名', fixed: 'left'}
+				,{field:'cname', title: '课程名', fixed: 'left'}
+				,{field:'uScore', title: '平时成绩',  event: 'setCity', sort: true, fixed: 'left'}
+				,{field:'score', title: '期末成绩', event: 'setSign', sort: true, fixed: 'left'}
+				,{field:'tScore', title: '总成绩',  sort: true, fixed: 'left'}
+			]]
+			,page: true
+			,limit: 10
+			,limits: [5, 10, 20, 50, 100],
+			//分页方法一：
+			parseData: function(res){ //将原始数据解析成 table 组件所规定的数据，res为从url中get到的数据
+				var result;
+				console.log("aaa="+this);
+				console.log("bbb"+JSON.stringify(res));
+				console.log("curr==="+this.page.curr);
+
+				//(前端来实现)分页方法一：
+				//这是前台 用res.data接受全部数据 再根据当前页的条件从全部数据中选取一部分数据显示出来
+				if(this.page.curr){
+					//若为第二页 则curr为2 页面显示的数据就是从res.data集合数组里的 （2-1）*limit（10）=10 到 limit（10）*2=20的数据
+					result = res.data.slice(this.limit*(this.page.curr-1),this.limit*this.page.curr);
+				}
+				else{
+					// 一开始就是第一页 则就是 显示的数据就是从res.data集合数组里的0到limit（10）中
+					result=res.data.slice(0,this.limit);
+				}
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.count, //解析数据长度
+					"data": result //解析数据列表
+				};
+			}
+		});
+		dropdown.render({
+			elem: '#demo3'
+			,data: [{
+				title: '全部'
+				,id: 100
+			},{
+				type: '-' //分割线
+			},{
+				title: '学号'
+				,id: 101
+			},{
+				type: '-' //分割线
+			},{
+				title: '姓名'
+				,id: 102
+			},{
+				type: '-' //分割线
+			},{
+				title: '课程名'
+				,id: 103
+			}]
+			,click: function(obj){
+				var zhi = document.getElementById('demo2')
+				this.elem.val(obj.title);
+				axios({
+					method:"POST",
+					url:"score.do",
+					params:{
+						operate:'selectDataScoreFroTeacher',
+						value:zhi.value,
+						selectName:this.elem.val()
+					}
+				})
+				.then(function (value) {
+					// table.reload('test');
+					window.location.reload();
+				})
+				.catch(function (reason) { });
+			}
+		});
+
+
+
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'setSign'){
+				layer.prompt({
+					formType: 2
+					,title: '修改 学号 为 ['+ data.sid +'] 的学生期末成绩'
+					,value: data.sign
+				}, function(value, index){
+					//选择修改后的操作
+					axios({
+						method:"POST",
+						url:"score.do",
+						params:{
+							operate:'changeScore',
+							sid:data.sid,
+							cname:data.cname,
+							newScoreStr:value
+						}
+					})
+					.then(function (value) {
+						// table.reload('test');
+						window.location.reload();
+					})
+					.catch(function (reason) { });
+
+					layer.close(index);
+					//同步更新表格和缓存对应的值
+					obj.update({
+						sign: value
+					});
+				});
+			}
+			else if(obj.event === 'setCity'){
+				layer.prompt({
+					formType: 2
+					,title: '修改 学号 为 ['+ data.sid +'] 的学生平时成绩'
+					,value: data.city
+				}, function(value, index){
+					//选择修改后的操作
+					axios({
+						method:"POST",
+						url:"score.do",
+						params:{
+							operate:'changeUScore',
+							sid:data.sid,
+							cname:data.cname,
+							newUScoreStr:value
+						}
+					})
+					.then(function (value) {
+						// table.reload('test');
+						window.location.reload();
+					})
+					.catch(function (reason) { });
+
+					layer.close(index);
+					//同步更新表格和缓存对应的值
+					obj.update({
+						city: value
+					});
+				});
+			}
+		});
+	});
+</script>
+
+</body>
+</html>

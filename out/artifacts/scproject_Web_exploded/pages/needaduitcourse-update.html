@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>自主选课</title>
+<!--    <link rel="stylesheet" type="text/css" href="assets/layui/css/layui.css" />-->
+    <link rel="stylesheet" type="text/css" href="../static/css/admin.css" />
+    <link rel="stylesheet" type="text/css" href="../static/layui-v2.7.6/layui/css/layui.css" />
+    <script src="../static/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../static/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../static/layui-v2.7.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+
+  <body>
+    <div class="page-content-wrap" id="studentSearch">
+      <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">课程修改</h5>
+      <hr>
+    </div>
+    <form class="layui-form" action="">
+      <div class="layui-form-item">
+        <label class="layui-form-label">课程名</label>
+        <div class="layui-input-block">
+          <input id="cname" type="text" name="cname" lay-verify="title" autocomplete="off" placeholder="请输入课程名称" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">上课时间</label>
+        <div class="layui-input-block">
+          <input id="time" type="text" name="time" lay-verify="title" autocomplete="off" placeholder="请输入上课时间" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">上课地点</label>
+        <div class="layui-input-block">
+          <input id="address" type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入上课地点" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">容量</label>
+        <div class="layui-inline">
+          <input id="cap" type="text" name="cap" lay-verify="number|title" autocomplete="off" placeholder="请输入课程人数上限" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+      </div>
+    </form>
+
+  <script>
+    layui.use(['form', 'util', 'layer','dropdown','table'], function(){
+      var form = layui.form;
+      var x = "";
+      var dropdown = layui.dropdown
+              ,util = layui.util
+              ,layer = layui.layer
+              ,table = layui.table
+              ,$ = layui.jquery;
+      form.verify({
+        title: function(value){
+          if(value.length == 0){
+            return '不能为空';
+          }
+        }
+        ,pass: [
+          /^[\S]{6,12}$/
+          ,'密码必须6到12位，且不能出现空格'
+        ]
+      });
+      //初演示 - 绑定输入框
+      dropdown.render({
+        elem: '#cap'
+        ,data: [{
+          title: '50'
+          ,id: 101
+        },{
+          title: '60'
+          ,id: 102
+        },{
+          title: '90'
+          ,id: 103
+        },{
+          title: '100'
+          ,id: 104
+        },{
+          title: '120'
+          ,id: 105
+        },{
+          title: '150'
+          ,id: 106
+        }]
+        ,click: function(obj){
+          this.elem.val(obj.title);
+        }
+        ,style: 'width: 235px;'
+      });
+
+      //上课时间
+      dropdown.render({
+        elem: '#time'
+        ,data: [
+          {type: '-'} //分割线
+          ,{title: '星期一'
+            ,id: 5
+            ,child: [{
+              title: '星期一第1-2节'
+              ,id: 55
+            },{
+              title: '星期一第3-4节'
+              ,id: 52
+            },{
+              title: '星期一第5-6节'
+              ,id: 53
+            },{
+              title: '星期一第7-8节'
+              ,id: 55
+            },{
+              title: '星期一第9-10节'
+              ,id: 52
+            },{
+              title: '星期一第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期二'
+            ,id: 6
+            ,child: [{
+              title: '星期二第1-2节'
+              ,id: 55
+            },{
+              title: '星期二第3-4节'
+              ,id: 52
+            },{
+              title: '星期二第5-6节'
+              ,id: 53
+            },{
+              title: '星期二第7-8节'
+              ,id: 55
+            },{
+              title: '星期二第9-10节'
+              ,id: 52
+            },{
+              title: '星期二第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期三'
+            ,id: 7
+            ,child: [{
+              title: '星期三第1-2节'
+              ,id: 55
+            },{
+              title: '星期三第3-4节'
+              ,id: 52
+            },{
+              title: '星期三第5-6节'
+              ,id: 53
+            },{
+              title: '星期三第7-8节'
+              ,id: 55
+            },{
+              title: '星期三第9-10节'
+              ,id: 52
+            },{
+              title: '星期三第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期四'
+            ,id: 8
+            ,child: [{
+              title: '星期四第1-2节'
+              ,id: 55
+            },{
+              title: '星期四第3-4节'
+              ,id: 52
+            },{
+              title: '星期四第5-6节'
+              ,id: 53
+            },{
+              title: '星期四第7-8节'
+              ,id: 55
+            },{
+              title: '星期四第9-10节'
+              ,id: 52
+            },{
+              title: '星期四第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期五'
+            ,id: 9
+            ,child: [{
+              title: '星期五第1-2节'
+              ,id: 55
+            },{
+              title: '星期五第3-4节'
+              ,id: 52
+            },{
+              title: '星期五第5-6节'
+              ,id: 53
+            },{
+              title: '星期五第7-8节'
+              ,id: 55
+            },{
+              title: '星期五第9-10节'
+              ,id: 52
+            },{
+              title: '星期五第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期六'
+            ,id: 10
+            ,child: [{
+              title: '星期六第1-2节'
+              ,id: 55
+            },{
+              title: '星期六第3-4节'
+              ,id: 52
+            },{
+              title: '星期六第5-6节'
+              ,id: 53
+            },{
+              title: '星期六第7-8节'
+              ,id: 55
+            },{
+              title: '星期六第9-10节'
+              ,id: 52
+            },{
+              title: '星期六第11-12节'
+              ,id: 53
+            }]
+          },{type: '-'} //分割线
+          ,{title: '星期天'
+            ,id: 11
+            ,child: [{
+              title: '星期天第1-2节'
+              ,id: 55
+            },{
+              title: '星期天第3-4节'
+              ,id: 52
+            },{
+              title: '星期天第5-6节'
+              ,id: 53
+            },{
+              title: '星期天第7-8节'
+              ,id: 55
+            },{
+              title: '星期天第9-10节'
+              ,id: 52
+            },{
+              title: '星期天第11-12节'
+              ,id: 53
+            }]
+          },
+        ]
+        // ,ready: function(elemPanel, elem){
+        //   console.log(elemPanel);
+        //   //console.log(elem);
+        // }
+         ,click: function(data,item){
+          // if($("time").val() === null)
+          // {
+          //   x = "";
+          // }
+          this.elem.val(x + data.title+'，');
+          x += data.title+'，';
+          console.log(this.elem.val());
+
+          // console.log(item.);
+          //console.log(data);
+
+          //console.log(this.elem);
+        }
+        ,style: 'width: 235px;'
+      });
+
+      dropdown.render({
+        elem: '#address'
+        , data: [
+          {type: '-'} //分割线
+          ,{title: '第一教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'1教-101'}
+                ,{title:'1教-102'}
+                ,{title:'1教-103'}
+                ,{title:'1教-104'}
+                ,{title:'1教-105'}
+                ,{title:'1教-106'}
+                ,{title:'1教-107'}
+                ,{title:'1教-108'}
+                ,{title:'1教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'1教-201'}
+                ,{title:'1教-202'}
+                ,{title:'1教-203'}
+                ,{title:'1教-204'}
+                ,{title:'1教-205'}
+                ,{title:'1教-206'}
+                ,{title:'1教-207'}
+                ,{title:'1教-208'}
+                ,{title:'1教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'1教-301'}
+                     ,{title:'1教-302'}
+                     ,{title:'1教-303'}
+                     ,{title:'1教-304'}
+                     ,{title:'1教-305'}
+                     ,{title:'1教-306'}
+                     ,{title:'1教-307'}
+                     ,{title:'1教-308'}
+                     ,{title:'1教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'1教-401'}
+                ,{title:'1教-402'}
+                ,{title:'1教-403'}
+                ,{title:'1教-404'}
+                ,{title:'1教-405'}
+                ,{title:'1教-406'}
+                ,{title:'1教-407'}
+                ,{title:'1教-408'}
+                ,{title:'1教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'1教-501'}
+                ,{title:'1教-502'}
+                ,{title:'1教-503'}
+                ,{title:'1教-504'}
+                ,{title:'1教-505'}
+                ,{title:'1教-506'}
+                ,{title:'1教-507'}
+                ,{title:'1教-508'}
+                ,{title:'1教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'1教-601'}
+                ,{title:'1教-602'}
+                ,{title:'1教-603'}
+                ,{title:'1教-604'}
+                ,{title:'1教-605'}
+                ,{title:'1教-606'}
+                ,{title:'1教-607'}
+                ,{title:'1教-608'}
+                ,{title:'1教-609'}]
+            }]
+          },{type: '-'} //分割线
+          ,{title: '第二教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'2教-101'}
+                ,{title:'2教-102'}
+                ,{title:'2教-103'}
+                ,{title:'2教-104'}
+                ,{title:'2教-105'}
+                ,{title:'2教-106'}
+                ,{title:'2教-107'}
+                ,{title:'2教-108'}
+                ,{title:'2教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'2教-201'}
+                ,{title:'2教-202'}
+                ,{title:'2教-203'}
+                ,{title:'2教-204'}
+                ,{title:'2教-205'}
+                ,{title:'2教-206'}
+                ,{title:'2教-207'}
+                ,{title:'2教-208'}
+                ,{title:'2教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'2教-301'}
+                ,{title:'2教-302'}
+                ,{title:'2教-303'}
+                ,{title:'2教-304'}
+                ,{title:'2教-305'}
+                ,{title:'2教-306'}
+                ,{title:'2教-307'}
+                ,{title:'2教-308'}
+                ,{title:'2教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'2教-401'}
+                ,{title:'2教-402'}
+                ,{title:'2教-403'}
+                ,{title:'2教-404'}
+                ,{title:'2教-405'}
+                ,{title:'2教-406'}
+                ,{title:'2教-407'}
+                ,{title:'2教-408'}
+                ,{title:'2教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'2教-501'}
+                ,{title:'2教-502'}
+                ,{title:'2教-503'}
+                ,{title:'2教-504'}
+                ,{title:'2教-505'}
+                ,{title:'2教-506'}
+                ,{title:'2教-507'}
+                ,{title:'2教-508'}
+                ,{title:'2教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'2教-601'}
+                ,{title:'2教-602'}
+                ,{title:'2教-603'}
+                ,{title:'2教-604'}
+                ,{title:'2教-605'}
+                ,{title:'2教-606'}
+                ,{title:'2教-607'}
+                ,{title:'2教-608'}
+                ,{title:'2教-609'}]
+            }]
+          },{type: '-'} //分割线
+          ,{title: '第三教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'3教-101'}
+                ,{title:'3教-102'}
+                ,{title:'3教-103'}
+                ,{title:'3教-104'}
+                ,{title:'3教-105'}
+                ,{title:'3教-106'}
+                ,{title:'3教-107'}
+                ,{title:'3教-108'}
+                ,{title:'3教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'3教-201'}
+                ,{title:'3教-202'}
+                ,{title:'3教-203'}
+                ,{title:'3教-204'}
+                ,{title:'3教-205'}
+                ,{title:'3教-206'}
+                ,{title:'3教-207'}
+                ,{title:'3教-208'}
+                ,{title:'3教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'3教-301'}
+                ,{title:'3教-302'}
+                ,{title:'3教-303'}
+                ,{title:'3教-304'}
+                ,{title:'3教-305'}
+                ,{title:'3教-306'}
+                ,{title:'3教-307'}
+                ,{title:'3教-308'}
+                ,{title:'3教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'3教-401'}
+                ,{title:'3教-402'}
+                ,{title:'3教-403'}
+                ,{title:'3教-404'}
+                ,{title:'3教-405'}
+                ,{title:'3教-406'}
+                ,{title:'3教-407'}
+                ,{title:'3教-408'}
+                ,{title:'3教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'3教-501'}
+                ,{title:'3教-502'}
+                ,{title:'3教-503'}
+                ,{title:'3教-504'}
+                ,{title:'3教-505'}
+                ,{title:'3教-506'}
+                ,{title:'3教-507'}
+                ,{title:'3教-508'}
+                ,{title:'3教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'3教-601'}
+                ,{title:'3教-602'}
+                ,{title:'3教-603'}
+                ,{title:'3教-604'}
+                ,{title:'3教-605'}
+                ,{title:'3教-606'}
+                ,{title:'3教-607'}
+                ,{title:'3教-608'}
+                ,{title:'3教-609'}]
+            }]
+          },{type: '-'} //分割线
+          ,{title: '第四教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'4教-101'}
+                ,{title:'4教-102'}
+                ,{title:'4教-103'}
+                ,{title:'4教-104'}
+                ,{title:'4教-105'}
+                ,{title:'4教-106'}
+                ,{title:'4教-107'}
+                ,{title:'4教-108'}
+                ,{title:'4教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'4教-201'}
+                ,{title:'4教-202'}
+                ,{title:'4教-203'}
+                ,{title:'4教-204'}
+                ,{title:'4教-205'}
+                ,{title:'4教-206'}
+                ,{title:'4教-207'}
+                ,{title:'4教-208'}
+                ,{title:'4教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'4教-301'}
+                ,{title:'4教-302'}
+                ,{title:'4教-303'}
+                ,{title:'4教-304'}
+                ,{title:'4教-305'}
+                ,{title:'4教-306'}
+                ,{title:'4教-307'}
+                ,{title:'4教-308'}
+                ,{title:'4教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'4教-401'}
+                ,{title:'4教-402'}
+                ,{title:'4教-403'}
+                ,{title:'4教-404'}
+                ,{title:'4教-405'}
+                ,{title:'4教-406'}
+                ,{title:'4教-407'}
+                ,{title:'4教-408'}
+                ,{title:'4教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'4教-501'}
+                ,{title:'4教-502'}
+                ,{title:'4教-503'}
+                ,{title:'4教-504'}
+                ,{title:'4教-505'}
+                ,{title:'4教-506'}
+                ,{title:'4教-507'}
+                ,{title:'4教-508'}
+                ,{title:'4教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'4教-601'}
+                ,{title:'4教-602'}
+                ,{title:'4教-603'}
+                ,{title:'4教-604'}
+                ,{title:'4教-605'}
+                ,{title:'4教-606'}
+                ,{title:'4教-607'}
+                ,{title:'4教-608'}
+                ,{title:'4教-609'}]
+            }]
+          },{type: '-'} //分割线
+          ,{title: '第五教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'5教-101'}
+                ,{title:'5教-102'}
+                ,{title:'5教-103'}
+                ,{title:'5教-104'}
+                ,{title:'5教-105'}
+                ,{title:'5教-106'}
+                ,{title:'5教-107'}
+                ,{title:'5教-108'}
+                ,{title:'5教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'5教-201'}
+                ,{title:'5教-202'}
+                ,{title:'5教-203'}
+                ,{title:'5教-204'}
+                ,{title:'5教-205'}
+                ,{title:'5教-206'}
+                ,{title:'5教-207'}
+                ,{title:'5教-208'}
+                ,{title:'5教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'5教-301'}
+                ,{title:'5教-302'}
+                ,{title:'5教-303'}
+                ,{title:'5教-304'}
+                ,{title:'5教-305'}
+                ,{title:'5教-306'}
+                ,{title:'5教-307'}
+                ,{title:'5教-308'}
+                ,{title:'5教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'5教-401'}
+                ,{title:'5教-402'}
+                ,{title:'5教-403'}
+                ,{title:'5教-404'}
+                ,{title:'5教-405'}
+                ,{title:'5教-406'}
+                ,{title:'5教-407'}
+                ,{title:'5教-408'}
+                ,{title:'5教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'5教-501'}
+                ,{title:'5教-502'}
+                ,{title:'5教-503'}
+                ,{title:'5教-504'}
+                ,{title:'5教-505'}
+                ,{title:'5教-506'}
+                ,{title:'5教-507'}
+                ,{title:'5教-508'}
+                ,{title:'5教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'5教-601'}
+                ,{title:'5教-602'}
+                ,{title:'5教-603'}
+                ,{title:'5教-604'}
+                ,{title:'5教-605'}
+                ,{title:'5教-606'}
+                ,{title:'5教-607'}
+                ,{title:'5教-608'}
+                ,{title:'5教-609'}]
+            }]
+          },{type: '-'} //分割线
+          ,{title: '第六教学楼'
+            ,id: 5
+            ,child: [{
+              title: '第一层'
+              ,id: 55
+              ,child:[{title:'6教-101'}
+                ,{title:'6教-102'}
+                ,{title:'6教-103'}
+                ,{title:'6教-104'}
+                ,{title:'6教-105'}
+                ,{title:'6教-106'}
+                ,{title:'6教-107'}
+                ,{title:'6教-108'}
+                ,{title:'6教-109'}]
+            },{
+              title: '第二层'
+              ,id: 52
+              ,child:[{title:'6教-201'}
+                ,{title:'6教-202'}
+                ,{title:'6教-203'}
+                ,{title:'6教-204'}
+                ,{title:'6教-205'}
+                ,{title:'6教-206'}
+                ,{title:'6教-207'}
+                ,{title:'6教-208'}
+                ,{title:'6教-209'}]
+            },{
+              title: '第三层'
+              ,id: 53
+              ,child:[{title:'6教-301'}
+                ,{title:'6教-302'}
+                ,{title:'6教-303'}
+                ,{title:'6教-304'}
+                ,{title:'6教-305'}
+                ,{title:'6教-306'}
+                ,{title:'6教-307'}
+                ,{title:'6教-308'}
+                ,{title:'6教-309'}]
+            },{
+              title: '第四层'
+              ,id: 55
+              ,child:[{title:'6教-401'}
+                ,{title:'6教-402'}
+                ,{title:'6教-403'}
+                ,{title:'6教-404'}
+                ,{title:'6教-405'}
+                ,{title:'6教-406'}
+                ,{title:'6教-407'}
+                ,{title:'6教-408'}
+                ,{title:'6教-409'}]
+            }, {
+              title: '第五层'
+              , id: 52
+              ,child:[{title:'6教-501'}
+                ,{title:'6教-502'}
+                ,{title:'6教-503'}
+                ,{title:'6教-504'}
+                ,{title:'6教-505'}
+                ,{title:'6教-506'}
+                ,{title:'6教-507'}
+                ,{title:'6教-508'}
+                ,{title:'6教-509'}]
+            }, {
+              title: '第六层'
+              , id: 53
+              ,child:[{title:'6教-601'}
+                ,{title:'6教-602'}
+                ,{title:'6教-603'}
+                ,{title:'6教-604'}
+                ,{title:'6教-605'}
+                ,{title:'6教-606'}
+                ,{title:'6教-607'}
+                ,{title:'6教-608'}
+                ,{title:'6教-609'}]
+            }]
+          }
+
+        ]
+        ,click: function(data,item){
+          // if($("time").val() === null)
+          // {
+          //   x = "";
+          // }
+          this.elem.val(data.title);
+          //x += data.title+'；';
+          //console.log(this.elem.val());
+        }
+        ,style: 'width: 235px;'
+      })
+
+      form.on('submit(demo1)', function(data){
+        $.post("http://localhost:8080/scproject/course.do?operate=applyCourse", data.field,function (value){
+          var flag = value.exist;
+          if(flag == true){//若请求返回的exist信息为true说明申请的课程与已有的课程有时间地点冲突
+            layer.alert('该申请课程与已有课程时间冲突', {icon: 2,title:" "});
+          }else{
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+          }
+
+        },"json");
+
+      return false;
+    });
+    })
+  </script>
+  </body>
+
+  </html>

@@ -1,0 +1,14 @@
+{"code":0,
+  "msg":"",
+  "count":1000,
+  "data":[{
+
+    "courseNo":20152,
+    "courseName":"计算机",
+    "classtime":"10.16",
+    "classplace":"六教",
+    "capacity":"100",
+    "teacher":"黄学举老师",
+    "people":"56"
+
+  }]}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>自主选课</title>
+    <link rel="stylesheet" type="text/css" href="../static/layui-v2.7.6/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/admin.css" />
+    <script src="../static/layui-v2.7.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../static/js/aJaxUtil.js"></script>
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../static/js/axios.min.js" type="text/javascript" ></script>
+
+</head>
+
+<body>
+<div class="page-content-wrap" id="studentSearch">
+    <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">自主选课界面</h5>
+</div>
+<table id="test" lay-filter="test" ></table>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">选课</a>
+</script>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-inline" style="width: 235px;">
+        <input name="" placeholder="请输入你要查询的信息" class="layui-input" id="demo2">
+    </div>
+    <div class="layui-inline layui-word-aux layui-font-gray">
+        <a href="javascript:;" class="layui-font-blue" id="demo3">查询 <i class="layui-icon layui-font-12 layui-icon-down"></i></a>
+    </div>
+</script>
+
+
+<script>
+    layui.use(['form', 'util', 'layer','dropdown','table'], function(){
+        var form = layui.form;
+        var x = "";
+        var dropdown = layui.dropdown
+            ,util = layui.util
+            ,layer = layui.layer
+            ,table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#test'
+            ,height: 500
+            ,url: 'http://localhost:8080/scproject/course.do?operate=getCourseForStudent' //数据接口
+            ,page: true //开启分页
+            ,limit: 10
+            ,limits: [5, 10, 20, 50, 100],
+            //分页方法一：
+            parseData: function(res){ //将原始数据解析成 table 组件所规定的数据，res为从url中get到的数据
+                var result;
+
+                //(前端来实现)分页方法一：
+                //这是前台 用res.data接受全部数据 再根据当前页的条件从全部数据中选取一部分数据显示出来
+                if(this.page.curr){
+                    //若为第二页 则curr为2 页面显示的数据就是从res.data集合数组里的 （2-1）*limit（10）=10 到 limit（10）*2=20的数据
+                    result = res.data.slice(this.limit*(this.page.curr-1),this.limit*this.page.curr);
+                }
+                else{
+                    // 一开始就是第一页 则就是 显示的数据就是从res.data集合数组里的0到limit（10）中
+                    result=res.data.slice(0,this.limit);
+                }
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.count, //解析数据长度
+                    "data": result //解析数据列表
+                };
+            }
+            ,toolbar:'#toolbarDemo'
+            ,cols: [[ //表头
+                {field: 'cid', title: '课程号', width:100, sort: true, fixed: 'left'}
+                ,{field: 'cname', title: '课程名', width:200, fixed: 'left'}
+                ,{field: 'time', title: '上课时间', sort: true, fixed: 'left'}
+                ,{field: 'address', title: '上课地点', fixed: 'left'}
+                ,{field: 'teachername', title: '教师', fixed: 'left'}
+                ,{field: 'cap', title: '容量', sort: true, fixed: 'left'}
+                ,{field: 'snum', title: '已选人数',sort: true, fixed: 'left'}
+                ,{title:'操作', toolbar: '#barDemo', width:100, fixed: 'left'}
+            ]]
+            ,done: function() {
+                table.on('tool(test)', function(obj){ // 双击 toolDouble
+                    var data = obj.data;
+                    if(obj.event === 'del'){
+                        layer.confirm('是否确认退选此课程', function(index){
+                            obj.del();
+                            layer.close(index);
+                        });
+                    } else if(obj.event === 'edit'){
+                        //写函数，传递数据
+                        layer.open({
+                            title: '选课',
+                            type: 1,
+                            btn:['确认选课','取消'],
+                            area: ['20%','30%'],
+                            content: '<div style="padding: 16px;">是否确认选择此课程</div>',
+                            yes: function (index, layero) {
+                                //点击确认后的操作
+                                //向courseController放送请求
+                                axios({
+                                    method:"POST",
+                                    url:"course.do",
+                                    params:{
+                                        operate:'addCourse',
+                                        cid:obj.data.cid
+                                    }
+                                })
+                                    .then(function (value) {
+                                        var flag = value.data.no;
+                                        if(flag == true){//若请求返回的no信息为true说明课程时间冲突
+                                            layer.alert('课程时间冲突', {icon: 2,title:" "});
+                                        }else{//不冲突则刷新数据表格
+                                            table.reload('test');
+                                        }
+                                    })
+                                    .catch(function (reason) {  });
+                                layer.close(index);},
+                            btn2: function (index, layero) {
+                                // 取消后的操作
+                                layer.close(index);
+                            }
+
+                        });
+                    }
+                });
+            }
+        });
+        dropdown.render({
+            elem: '#demo3'
+            ,data: [{
+                title: '全部'
+                ,id: 100
+            },{
+                type: '-' //分割线
+            },{
+                title: '课程号'
+                ,id: 101
+            },{
+                type: '-' //分割线
+            },{
+                title: '课程名称'
+                ,id: 102
+            }]
+            ,click: function(obj){
+                var zhi = document.getElementById('demo2')
+                this.elem.val(obj.title);
+                axios({
+                    method:"POST",
+                    url:"course.do",
+                    params:{
+                        operate:'getCourseBySelect',
+                        value:zhi.value,
+                        selectName:this.elem.val()
+                    }
+                })
+                .then(function (value) {
+                    table.reload('test');
+                    window.location.reload();
+                })
+                .catch(function (reason) { });
+            }
+        });
+
+    });
+</script>
+</body>
+
+</html>

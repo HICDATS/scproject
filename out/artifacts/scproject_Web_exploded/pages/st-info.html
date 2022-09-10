@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/css/myscore3-1.css}" />
+    <script th:src="@{/static/js/aJaxUtil.js}"></script>
+    <script th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/css/admin.css}" />
+</head>
+<body>
+<div class="page-content-wrap" id="studentSearch">
+    <h5 style="text-align:center;font-size: 20px;line-height: 25px;color:#666">用户详情</h5>
+    <hr>
+</div>
+<div class="center">
+    <div class="haha">
+        <p>学号:</p>
+        <p id="de1" th:text="${session.currStudent.getSid()}"></p><br>
+        <p>姓名:</p>
+        <p id="de2" th:text="${session.currStudent.getName()}"></p>
+    </div>
+</div>
+<div class='centerAfterLeft'>
+    <ul class="jiange">
+        <li>性别:<p id="de3" th:text="${session.currStudent.getSex()}"></p></li>
+        <li>专业:<p id="de4" th:text="${session.currStudent.getMajor()}"></p></li>
+        <li>年纪:<p id="de5" th:text="${session.currStudent.getGrade()}"></p></li>
+        <li>班级:<p id="de6" th:text="${session.currStudent.getSclass()}"></p></li>
+    </ul>
+</div>
+<div class="centerAfterRight">
+        <img class="centerAfterRight" th:src="@{/static/images/preview.jpg}">
+<!--    <div class="zoomImage"  th:style="'background:url(' + @{/static/images/preview.jpg} + ');'"></div>-->
+
+</div>
+
+<div class="footer">
+    <div class="layui-btn-container">
+        <button type="button" data-method="offset" id="abc" data-type="t" class="layui-btn layui-btn-normal layui-btn-radius" style="background-color: #1e9fff ">修改密码</button>
+    </div>
+
+</div>
+
+<script th:src="@{/static/layer/layer.js}" type="text/javascript" charset="utf-8"></script>
+<script th:src="@{/static/layui/layui.js}" type="text/javascript" charset="utf-8"></script>
+<script>
+
+    $('#abc').on('click', function(){
+        layer.open({
+            type: 2,
+            title: '修改密码',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['500px', '70%'],
+            content: 'pages/changePwdForSt.html' //iframe的url
+        });});
+</script>
+</body>
+</html>
